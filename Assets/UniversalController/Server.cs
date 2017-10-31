@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using UnityEngine;
 
 namespace AlphaOwl.UniversalController
 {
@@ -51,6 +52,45 @@ namespace AlphaOwl.UniversalController
 
             // Ensures the code to have permission to access a socket
             permission.Demand();
+        }
+
+        /// <summary>
+        /// Opens the socket on specified port with SocketType set as 
+        /// Stream & ProtocolType set as Tcp.
+        /// </summary>
+        /// <param name="port">The port that the socket will be bound 
+        /// to.</param>
+        private void OpenSocket(int port)
+        {
+            try
+            {
+                // Reset Socket object
+                socketListener = null;
+
+                // Resolves a host name to an IPHostEntry instance
+                IPHostEntry ipHost = Dns.GetHostEntry("");
+
+                // Gets 1st IP address associated with a localhost
+                IPAddress ipAddress = ipHost.AddressList[0];
+
+                // Creates a network endpoint
+                ipEndPoint = new IPEndPoint(ipAddress, port);
+
+                // Creates a Socket object to listen the incoming connection
+                socketListener = 
+                new Socket(
+                    ipAddress.AddressFamily, 
+                    SocketType.Stream, 
+                    ProtocolType.Tcp
+                );
+
+                // Associates a socket with a local endpoint
+                socketListener.Bind(ipEndPoint);
+            }
+            catch (SocketException ex)
+            {
+                throw;
+            }
         }
     }
 }
