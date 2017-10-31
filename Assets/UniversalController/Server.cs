@@ -58,12 +58,12 @@ namespace AlphaOwl.UniversalController
         }
 
         /// <summary>
-        /// Opens the socket on specified port with SocketType set as 
+        /// Perpares the socket on specified port with SocketType set as 
         /// Stream & ProtocolType set as Tcp.
         /// </summary>
         /// <param name="port">The port that the socket will be bound 
         /// to.</param>
-        private void OpenSocket(int port)
+        private void PerpareSocket(int port)
         {
             try
             {
