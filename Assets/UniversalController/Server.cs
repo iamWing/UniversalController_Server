@@ -14,8 +14,6 @@ namespace AlphaOwl.UniversalController
 
         private static bool IsRunning = false;
 
-        private bool debug;
-
         private Socket socketListener;
         private Socket handler;
         private IPEndPoint ipEndPoint;
