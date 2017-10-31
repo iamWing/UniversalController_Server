@@ -37,24 +37,27 @@ namespace AlphaOwl.UniversalController
         {
             Server server = new Server();
 
+            return server;
         }
 
         /// <summary>
         /// Requests the socket permission.
         /// </summary>
+        [System.Obsolete("Unity cannot recognise SocketPermission. " +
+            "No alternative method is provided in this case.")]
         private void RequestSocketPermission()
         {
-            // Creates SocketPermission object for access restrictions
-            SocketPermission permission = 
-                new SocketPermission(
-                    NetworkAccess.Accept, // Allowes to accept connections
-                    TransportType.Tcp, // Defines transport types
-                    "", // The IP addresses of local host
-                    SocketPermission.AllPorts // Applies to all ports
-                );
-
-            // Ensures the code to have permission to access a socket
-            permission.Demand();
+//            // Creates SocketPermission object for access restrictions
+//            SocketPermission permission = 
+//                new SocketPermission(
+//                    NetworkAccess.Accept, // Allowes to accept connections
+//                    TransportType.Tcp, // Defines transport types
+//                    "", // The IP addresses of local host
+//                    SocketPermission.AllPorts // Applies to all ports
+//                );
+//
+//            // Ensures the code to have permission to access a socket
+//            permission.Demand();
         }
 
         /// <summary>
