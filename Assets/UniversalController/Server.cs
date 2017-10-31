@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using UnityEngine;
 
 namespace AlphaOwl.UniversalController
 {
@@ -15,12 +14,11 @@ namespace AlphaOwl.UniversalController
 
         private static bool IsRunning = false;
 
-        private static int Port;
-        private static int MaxConnections;
-
         private Socket socketListener;
         private Socket handler;
         private IPEndPoint ipEndPoint;
+        private int port;
+        private int maxConnections;
 
         /// <summary>
         /// Create a new instance of Server that will be initialised 
