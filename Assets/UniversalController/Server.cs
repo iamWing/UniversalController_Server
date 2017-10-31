@@ -14,6 +14,8 @@ namespace AlphaOwl.UniversalController
 
         private static bool IsRunning = false;
 
+        private bool debug;
+
         private Socket socketListener;
         private Socket handler;
         private IPEndPoint ipEndPoint;
@@ -27,8 +29,11 @@ namespace AlphaOwl.UniversalController
         /// <param name="port">Port number of the server.</param>
         /// <param name="maxConnections">Maximum connections of the 
         /// server.</param>
+        /// <param name="debug">Writes log msg to console if debug == 
+        /// true.</param>"> 
         public static Server Init(int port = DefaultPort, 
-                                  int maxConnections = DefaultMaxConnections)
+                                  int maxConnections = DefaultMaxConnections, 
+                                  bool debug = false)
         {
             Server server = new Server();
 
