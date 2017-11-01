@@ -41,6 +41,20 @@ namespace AlphaOwl.UniversalController
             return server;
         }
 
+        public bool Start()
+        {
+            if (IsRunning)
+                return false;
+            
+            PerpareSocket(port);
+            StartSocket(maxConnections);
+            IsRunning = true;
+
+            DebugUtilities.Log("Server started.");
+
+            return IsRunning;
+        }
+
         /// <summary>
         /// Sets up the customisable fields.
         /// </summary>
@@ -229,6 +243,7 @@ namespace AlphaOwl.UniversalController
                     }
 
                     DebugUtilities.Log(content);
+                    SendMsg();
                 }
             }
             catch (Exception ex)
