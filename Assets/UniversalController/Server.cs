@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Text;
+using System.Net;
 using System.Net.Sockets;
 using AlphaOwl.UniversalController.Utilities;
 
@@ -108,6 +110,165 @@ namespace AlphaOwl.UniversalController
             catch (SocketException ex)
             {
                 throw;
+            }
+        }
+
+        private void StartSocket(int maxConnections)
+        {
+            try
+            {
+                // Places the socket in a listening state and specifies the 
+                // maximum length of the pending connections queue.
+                socketListener.Listen(maxConnections);
+
+                // Begins an asynchronous operation to accept an attempt
+                AsyncCallback asyncCallback = new AsyncCallback(AcceptCallback);
+                socketListener.BeginAccept(asyncCallback, socketListener);
+
+                DebugUtilities.Log("Socket is now listening on " +
+                    ipEndPoint.Address + " port: " + ipEndPoint.Port);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private void AcceptCallback(IAsyncResult asyncResult)
+        {
+            Socket listener = null;
+
+            // A new socket to handle remote host communication
+            Socket handler = null;
+            try
+            {
+                // Receiving byte array
+                byte[] buffer = new byte[1024];
+                // Get listening Socket object
+                listener = (Socket)asyncResult.AsyncState;
+                // Create new socket
+                handler = listener.EndAccept(asyncResult);
+
+                // Uses Nagle algorithm
+                handler.NoDelay = false;
+
+                // Creates one object array for passing data
+                object[] obj = new object[2];
+                obj[0] = buffer;
+                obj[1] = handler;
+
+                // Begins to asynchronously receive data
+                handler.BeginReceive(
+                    buffer,     // An array of type byte for received data
+                    0,          // The zero-based position in the buffer
+                    buffer.Length,  // The number of bytes to receive
+                    SocketFlags.None, // Specifies send & receive behaviours
+                    new AsyncCallback(ReceiveCallback), // An AsyncCallback delegate
+                    obj         // Specifies information for receive operation
+                );
+
+                // Begins an asynchronous operation to accept an attempt
+                AsyncCallback asyncCallback = new AsyncCallback(AcceptCallback);
+                listener.BeginAccept(asyncCallback, listener);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private void ReceiveCallback(IAsyncResult asyncResult)
+        {
+            try
+            {
+                // Fetch a user-defined object that contains information
+                object[] obj = new object[2];
+                obj = (object[])asyncResult.AsyncState;
+
+                // Received byte array
+                byte[] buffer = (byte[])obj[0];
+
+                // A socket to handle remote host communication
+                handler = (Socket)obj[1];
+
+                // Received message
+                string content = string.Empty;
+               
+                // The number of bytes received
+                int bytesRead = handler.EndReceive(asyncResult);
+
+                if (bytesRead > 0)
+                {
+                    content += Encoding.Unicode.GetString(buffer, 0, bytesRead);
+
+                    // Check for the end-of-connectino tag. If it is not there, 
+                    // read more data.
+                    if (content.IndexOf("<EOC>") > -1)
+                    {
+                        // Convert byte array to string
+                        string str = content.Substring(0, 
+                                         content.LastIndexOf("<EOC>"));
+
+                        DebugUtilities.Log("Data received with EOC tag.");
+                        DebugUtilities.Log("Data: " + str);
+                    }
+                    else
+                    {
+                        // Continues to asynchronously receive data
+                        byte[] bufferNew = new byte[1024];
+                        obj[0] = bufferNew;
+                        obj[1] = handler;
+                        handler.BeginReceive(
+                            bufferNew, 
+                            0, 
+                            bufferNew.Length,
+                            SocketFlags.None,
+                            new AsyncCallback(ReceiveCallback),
+                            obj
+                        );
+                    }
+
+                    DebugUtilities.Log(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private void SendCallback(IAsyncResult asyncResult)
+        {
+            try
+            {
+                // A socket which has sent the data to remote host
+                Socket handler = (Socket)asyncResult.AsyncState;
+
+                // The number of bytes sent to the socket
+                int bytesSend = handler.EndSend(asyncResult);
+                DebugUtilities.Log("Sent " + bytesSend + " to client.");
+            }
+            catch (Exception ex)
+            {
+                
+            }
+        }
+
+        private void SendMsg()
+        {
+            try
+            {
+                // Prepares the reply message
+                string replyMsg = "Reply from server";
+                byte[] byteData = Encoding.Unicode.GetBytes(replyMsg);
+
+                // Sends data asynchronously to a connected Socket
+                handler.BeginSend(byteData, 0, byteData.Length, 0, 
+                    new AsyncCallback(SendCallback), handler);
+            }
+            catch (Exception ex)
+            {
+                
             }
         }
     }
