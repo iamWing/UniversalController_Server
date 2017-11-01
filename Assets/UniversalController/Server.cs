@@ -214,7 +214,7 @@ namespace AlphaOwl.UniversalController
 
                 if (bytesRead > 0)
                 {
-                    content += Encoding.Unicode.GetString(buffer, 0, bytesRead);
+                    content += Encoding.ASCII.GetString(buffer, 0, bytesRead);
 
                     // Check for the end-of-connectino tag. If it is not there, 
                     // read more data.
@@ -276,7 +276,7 @@ namespace AlphaOwl.UniversalController
             {
                 // Prepares the reply message
                 string replyMsg = "Reply from server";
-                byte[] byteData = Encoding.Unicode.GetBytes(replyMsg);
+                byte[] byteData = Encoding.ASCII.GetBytes(replyMsg);
 
                 // Sends data asynchronously to a connected Socket
                 handler.BeginSend(byteData, 0, byteData.Length, 0, 
