@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using AlphaOwl.UniversalController.Utilities;
 
 namespace AlphaOwl.UniversalController
 {
@@ -36,6 +37,19 @@ namespace AlphaOwl.UniversalController
             Server server = new Server();
 
             return server;
+        }
+
+        /// <summary>
+        /// Sets up the customisable fields.
+        /// </summary>
+        /// <param name="port">Port.</param>
+        /// <param name="maxConnections">Max connections.</param>
+        /// <param name="debug">If set to <c>true</c> debug.</param>
+        private void SetUp(int port, int maxConnections, bool debug)
+        {
+            this.port = port;
+            this.maxConnections = maxConnections;
+            DebugUtilities.Enable = debug;
         }
 
         /// <summary>
