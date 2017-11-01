@@ -37,6 +37,7 @@ namespace AlphaOwl.UniversalController
                                   bool debug = false)
         {
             Server server = new Server();
+            server.SetUp(port, maxConnections, debug);
 
             return server;
         }
