@@ -1,22 +1,22 @@
 ﻿using UnityEngine;
-using UnityEditor;
-using UnityEngine.TestTools;
 using NUnit.Framework;
-using System.Collections;
+using AlphaOwl.UniversalController.Utilities;
 
+/// <summary>
+/// Test units for class Networking.
+/// </summary>
 public class NetworkingTest {
 
 	[Test]
-	public void NetworkingTestSimplePasses() {
-		// Use the Assert class to test conditions.
-	}
+	/// <summary>
+	/// Confirm the IP address retrieved isn't the 
+	/// loopback address.
+	/// </summary>
+	public void GetIpAddressTest() {
+        const string localhost = "127.0.0.1";
 
-	// A UnityTest behaves like a coroutine in PlayMode
-	// and allows you to yield null to skip a frame in EditMode
-	[UnityTest]
-	public IEnumerator NetworkingTestWithEnumeratorPasses() {
-		// Use the Assert class to test conditions.
-		// yield to skip a frame
-		yield return null;
-	}
+        Assert.AreNotEqual(localhost, Networking.GetIpAddress());
+        Debug.Log(Networking.GetIpAddress());
+    }
+
 }
