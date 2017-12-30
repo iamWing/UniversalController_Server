@@ -7,9 +7,9 @@ namespace AlphaOwl.UniversalController.Utilities
     /// Class containing network related methods for
     /// socket connection.
     /// </summary>
-    public class Networking
+    public class NetworkUtilities
     {
-        private const string TAG = "Networking";
+        private const string TAG = "Network Utilities";
 
         /// <summary>
         /// Fetches the local IP address of the machine.

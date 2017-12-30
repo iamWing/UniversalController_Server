@@ -3,7 +3,7 @@ using NUnit.Framework;
 using AlphaOwl.UniversalController.Utilities;
 
 /// <summary>
-/// Test units for class Networking.
+/// Test units for class NetworkUtilities.
 /// </summary>
 public class NetworkingTest {
 
@@ -15,8 +15,8 @@ public class NetworkingTest {
 	public void GetIpAddressTest() {
         const string localhost = "127.0.0.1";
 
-        Assert.AreNotEqual(localhost, Networking.GetIpAddress());
-        Debug.Log(Networking.GetIpAddress());
+        Assert.AreNotEqual(localhost, NetworkUtilities.GetIpAddress());
+        Debug.Log(NetworkUtilities.GetIpAddress());
     }
 
 }
