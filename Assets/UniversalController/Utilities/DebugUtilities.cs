@@ -24,23 +24,34 @@ namespace AlphaOwl.UniversalController.Utilities
         /// Write log message to console.
         /// </summary>
         /// <param name="msg">Log message.</param>
+        /// <param name="obj">Object to which the message applies.</param>
         /// <param name="type">Type of the log. 
         /// Default == LogType.Normal</param>
-        public static void Log(string msg, LogType type = LogType.Normal)
+        public static void Log(string msg, Object obj = null, 
+        LogType type = LogType.Normal)
         {
             if (!Enable)
                 return;
-            
+
             switch (type)
             {
                 case LogType.Normal:
-                    Debug.Log(msg);
+                    if (obj != null)
+                        Debug.Log(msg);
+                    else
+                        Debug.Log(msg, obj);
                     break;
                 case LogType.Warning:
-                    Debug.LogWarning(msg);
+                    if (obj != null)
+                        Debug.LogWarning(msg);
+                    else
+                        Debug.LogWarning(msg, obj);
                     break;
                 case LogType.Error:
-                    Debug.LogError(msg);
+                    if (obj != null)
+                        Debug.LogError(msg);
+                    else
+                        Debug.LogError(msg, obj);
                     break;
             }
         }
