@@ -12,7 +12,10 @@ namespace AlphaOwl.UniversalController.Utilities
     /// </summary>
     public class NetworkUtilities
     {
-        private const string TAG = "Network Utilities";
+        private const string TAG = "NetworkUtilities: ";
+
+        // The null value for int field.
+        private const int OptionalInt = -1;
 
         /// <summary>
         /// Fetches the local IP address of the machine.
@@ -35,29 +38,36 @@ namespace AlphaOwl.UniversalController.Utilities
         /// </summary>
         /// <param name="ip">IP address to bind to the socket.</param>
         /// <param name="port">Port to bind to the socket.</param>
+        /// <param name="bufferSize">Optional size of receive 
+        /// buffer. Default buffer size is 1024.</param>
         /// <returns>A Socket object that binds to specified IP & 
         /// port.</returns>
-        public static Socket InitSocketServer(string ip, int port)
+        public static Socket InitSocketServer(string ip, int port,
+        int bufferSize = OptionalInt)
         {
             // Parses IP string to IPAddress object.
             IPAddress ipAddr = IPAddress.Parse(ip);
             // Creates a network endpoint.
             IPEndPoint localEndPoint = new IPEndPoint(ipAddr, port);
 
+            // Set buffer size
+            if (bufferSize != OptionalInt)
+                StateObject.bufferSize = bufferSize;
+
             // Creates a Socket object to listen the
             // incoming connection.
-            Socket workSocket = new Socket(
+            Socket listener = new Socket(
                 ipAddr.AddressFamily,
                 SocketType.Stream,
                 ProtocolType.Tcp
             );
 
             // Associates a socket with a local endpoint.
-            workSocket.Bind(localEndPoint);
+            listener.Bind(localEndPoint);
 
-            DebugUtilities.Log(TAG + ": Server started");
+            DebugUtilities.Log(TAG + "Server started");
 
-            return workSocket;
+            return listener;
         }
 
         // Callbacks for socket connection
@@ -161,7 +171,7 @@ namespace AlphaOwl.UniversalController.Utilities
             public byte[] buffer = new byte[bufferSize];
             // Received data string.
             public StringBuilder sb = new StringBuilder();
-       }
+        }
     }
 
 }
