@@ -70,6 +70,28 @@ namespace AlphaOwl.UniversalController.Utilities
             return listener;
         }
 
+        /// <summary>
+        /// Places the socket in a listening state and begins 
+        /// to accept connections.
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="backlog">The maximum length of the 
+        /// pending connections queue.</param>
+        public static void StartListening(Socket socket, int backlog)
+        {
+            // Listen for incoming connections
+            socket.Listen(backlog);
+            // Start an asynchronous socket to listen for 
+            // connections.
+            socket.BeginAccept(new AsyncCallback(AcceptCallback), socket);
+
+            // For logging purpose.
+            string localAddr = socket.LocalEndPoint.ToString();
+            DebugUtilities.Log(
+                TAG + "Server is now listening on " + localAddr
+            );
+        }
+
         // Callbacks for socket connection
 
         /// <summary>
