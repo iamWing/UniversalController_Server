@@ -159,6 +159,23 @@ namespace AlphaOwl.UniversalController.Utilities
             }
         }
 
+        /// <summary>
+        /// Callback of the asynchronous socket while 
+        /// message is sent to the client.
+        /// </summary>
+        /// <param name="ar">Result of the async task.</param>
+        private static void SendCallback(IAsyncResult ar)
+        {
+            // Retrieve the socket from the state object.
+            Socket handler = (Socket)ar.AsyncState;
+
+            // Complete sending the data to the remote device.
+            int bytesSent = handler.EndSend(ar);
+            DebugUtilities.Log(
+                TAG + "Send " + bytesSent + " bytes to client."
+            );
+        }
+
         // Interfaces / Listeners
 
         /// <summary>
