@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace AlphaOwl.UniversalController.Utilities
 {
@@ -70,6 +71,34 @@ namespace AlphaOwl.UniversalController.Utilities
             /// <param name="msg">Received message from 
             /// remote socket client.</param>
             void OnReceiveComplete(string msg);
+        }
+
+        // Inner classes
+
+        /// <summary>
+        /// State object for reading data from socket clients 
+        /// asynchronously.
+        /// </summary>
+        private class StateObject
+        {
+            // Client socket.
+            public Socket workSocket = null;
+            // Size of receive buffer.
+            public readonly int BufferSize;
+            // Receive buffer.
+            public byte[] buffer;
+            // Received data string.
+            public StringBuilder sb = new StringBuilder();
+
+            /// <summary>
+            /// Constructor of the state object.
+            /// </summary>
+            /// <param name="bufferSize">Size of receive buffer.</param>
+            public StateObject(int bufferSize)
+            {
+                BufferSize = bufferSize;
+                buffer = new byte[BufferSize];
+            }
         }
     }
 
