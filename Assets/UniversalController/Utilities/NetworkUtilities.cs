@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
@@ -23,6 +24,10 @@ namespace AlphaOwl.UniversalController.Utilities
 
             return Dns.GetHostEntry(hostname).AddressList[0].ToString();
         }
+
+        /* Socket connections related */
+
+        private static IMessageReceiver messageReceiver;
 
         /// <summary>
         /// Initialises the server socket and bind it on specified 
@@ -53,6 +58,53 @@ namespace AlphaOwl.UniversalController.Utilities
             DebugUtilities.Log(TAG + ": Server started");
 
             return workSocket;
+        }
+
+        // Callbacks for socket connection
+
+        /// <summary>
+        /// Callback of the asynchronous socket while 
+        /// message received from client.
+        /// </summary>
+        /// <param name="ar">Result of the async task.</param>
+        private static void ReceiveCallback(IAsyncResult ar)
+        {
+            string content = string.Empty;
+
+            // Retrieve the state object and the handler socket 
+            // from the asynchronous state object.
+            StateObject state = (StateObject)ar.AsyncState;
+            Socket handler = state.workSocket;
+
+            // Read data from the client socket.
+            int bytesRead = handler.EndReceive(ar);
+
+            if (bytesRead > 0)
+            {
+                // There might be more data, so store the data
+                // received so far.
+                state.sb.Append(Encoding.ASCII.GetString(
+                    state.buffer, 0, bytesRead
+                ));
+
+                // Check for end-of-content tag. If it is not there, 
+                // read more data.
+                content = state.sb.ToString();
+                if (content.IndexOf("<EOC>") > -1)
+                {
+                    // All the data has been read from the client. 
+                    // Pass the content to the listener.
+                    messageReceiver.OnReceiveComplete(content);
+                }
+                else
+                {
+                    // Not all data received. Get more.
+                    handler.BeginReceive(
+                        state.buffer, 0, state.BufferSize, 0, 
+                        new AsyncCallback(ReceiveCallback), state
+                    );
+                }
+            }
         }
 
         // Interfaces / Listeners
