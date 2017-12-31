@@ -123,39 +123,46 @@ namespace AlphaOwl.UniversalController.Utilities
         {
             string content = string.Empty;
 
-            // Retrieve the state object and the handler socket 
-            // from the asynchronous state object.
-            StateObject state = (StateObject)ar.AsyncState;
-            Socket handler = state.workSocket;
-
-            // Read data from the client socket.
-            int bytesRead = handler.EndReceive(ar);
-
-            if (bytesRead > 0)
+            try
             {
-                // There might be more data, so store the data
-                // received so far.
-                state.sb.Append(Encoding.ASCII.GetString(
-                    state.buffer, 0, bytesRead
-                ));
+                // Retrieve the state object and the handler socket 
+                // from the asynchronous state object.
+                StateObject state = (StateObject)ar.AsyncState;
+                Socket handler = state.workSocket;
 
-                // Check for end-of-content tag. If it is not there, 
-                // read more data.
-                content = state.sb.ToString();
-                if (content.IndexOf("<EOC>") > -1)
+                // Read data from the client socket.
+                int bytesRead = handler.EndReceive(ar);
+
+                if (bytesRead > 0)
                 {
-                    // All the data has been read from the client. 
-                    // Pass the content to the listener.
-                    messageReceiver.OnReceiveComplete(content);
+                    // There might be more data, so store the data
+                    // received so far.
+                    state.sb.Append(Encoding.ASCII.GetString(
+                        state.buffer, 0, bytesRead
+                    ));
+
+                    // Check for end-of-content tag. If it is not there, 
+                    // read more data.
+                    content = state.sb.ToString();
+                    if (content.IndexOf("<EOC>") > -1)
+                    {
+                        // All the data has been read from the client. 
+                        // Pass the content to the listener.
+                        messageReceiver.OnReceiveComplete(content);
+                    }
+                    else
+                    {
+                        // Not all data received. Get more.
+                        handler.BeginReceive(
+                            state.buffer, 0, StateObject.bufferSize, 0,
+                            new AsyncCallback(ReceiveCallback), state
+                        );
+                    }
                 }
-                else
-                {
-                    // Not all data received. Get more.
-                    handler.BeginReceive(
-                        state.buffer, 0, StateObject.bufferSize, 0,
-                        new AsyncCallback(ReceiveCallback), state
-                    );
-                }
+            }
+            catch (Exception ex)
+            {
+                messageReceiver.OnReceiveFail(ex.Message);
             }
         }
 
@@ -192,6 +199,14 @@ namespace AlphaOwl.UniversalController.Utilities
             /// <param name="msg">Received message from 
             /// remote socket client.</param>
             void OnReceiveComplete(string msg);
+
+            /// <summary>
+            /// Implement this method to receive callback 
+            /// when the message receive fails.
+            /// </summary>
+            /// <param name="err">Error message. Usually 
+            /// the exception message.</param>
+            void OnReceiveFail(string err);
         }
 
         // Inner classes
