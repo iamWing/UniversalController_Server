@@ -67,18 +67,17 @@ namespace AlphaOwl.UniversalController.Utilities
         /// client connection request has been accepted.
         /// </summary>
         /// <param name="ar">Result of the async</param>
-        /// <param name="bufferSize">Size of receive buffer.</param>
-        private static void AcceptCallback(IAsyncResult ar, int bufferSize)
+        private static void AcceptCallback(IAsyncResult ar)
         {
             // Get the socket that handles the client request.
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = listener.EndAccept(ar);
 
             // Create the state object
-            StateObject state = new StateObject(bufferSize);
+            StateObject state = new StateObject();
             state.workSocket = handler;
             handler.BeginReceive(
-                state.buffer, 0, state.BufferSize, 0,
+                state.buffer, 0, StateObject.bufferSize, 0,
                 new AsyncCallback(ReceiveCallback), state
             );
         }
@@ -121,7 +120,7 @@ namespace AlphaOwl.UniversalController.Utilities
                 {
                     // Not all data received. Get more.
                     handler.BeginReceive(
-                        state.buffer, 0, state.BufferSize, 0,
+                        state.buffer, 0, StateObject.bufferSize, 0,
                         new AsyncCallback(ReceiveCallback), state
                     );
                 }
@@ -156,23 +155,13 @@ namespace AlphaOwl.UniversalController.Utilities
         {
             // Client socket.
             public Socket workSocket = null;
-            // Size of receive buffer.
-            public readonly int BufferSize;
+            // Size of receive buffer. Default = 1024.
+            public static int bufferSize = 1024;
             // Receive buffer.
-            public byte[] buffer;
+            public byte[] buffer = new byte[bufferSize];
             // Received data string.
             public StringBuilder sb = new StringBuilder();
-
-            /// <summary>
-            /// Constructor of the state object.
-            /// </summary>
-            /// <param name="bufferSize">Size of receive buffer.</param>
-            public StateObject(int bufferSize)
-            {
-                BufferSize = bufferSize;
-                buffer = new byte[BufferSize];
-            }
-        }
+       }
     }
 
 }
