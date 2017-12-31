@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using AlphaOwl.UniversalController.Utilities;
 
 /// <summary>
@@ -7,16 +6,19 @@ using AlphaOwl.UniversalController.Utilities;
 /// </summary>
 public class NetworkingTest {
 
-	[Test]
+    private const string TAG = "NetworkingTest: ";
+
+    [Test]
 	/// <summary>
 	/// Confirm the IP address retrieved isn't the 
 	/// loopback address.
 	/// </summary>
 	public void GetIpAddressTest() {
         const string localhost = "127.0.0.1";
+        string ip;
 
-        Assert.AreNotEqual(localhost, NetworkUtilities.GetIpAddress());
-        Debug.Log(NetworkUtilities.GetIpAddress());
+        Assert.AreNotEqual(localhost, ip = NetworkUtilities.GetIpAddress());
+        DebugUtilities.Log(TAG + ip);
     }
 
 }
