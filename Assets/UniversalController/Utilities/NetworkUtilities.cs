@@ -31,6 +31,7 @@ namespace AlphaOwl.UniversalController.Utilities
         /* Socket connections related */
 
         private static IMessageReceiver messageReceiver;
+        private static IMessageSender messageSender;
 
         /// <summary>
         /// Initialises the server socket and bind it on specified 
@@ -207,6 +208,29 @@ namespace AlphaOwl.UniversalController.Utilities
             /// <param name="err">Error message. Usually 
             /// the exception message.</param>
             void OnReceiveFail(string err);
+        }
+
+        /// <summary>
+        /// Interface to receive callback after a message 
+        /// has been sent to the remote socket client.
+        /// </summary>
+        public interface IMessageSender
+        {
+            /// <summary>
+            /// Implement this method to receive callback 
+            /// when message has been sent to the remote 
+            /// socket client.
+            /// </summary>
+            void OnSendComplete();
+
+            /// <summary>
+            /// Implement this method to receive callback
+            /// when the message fails to be sent to the 
+            /// remote socket client.
+            /// </summary>
+            /// <param name="err">Error message. Usually 
+            /// the exception message.</param>
+            void OnSendFail(string err);
         }
 
         // Inner classes
