@@ -93,6 +93,24 @@ namespace AlphaOwl.UniversalController.Utilities
             );
         }
 
+        /// <summary>
+        /// Send data to remote socket client.
+        /// </summary>
+        /// <param name="handler">The socket that handles the 
+        /// message delivery.</param>
+        /// <param name="data">The data that needs to be sent.</param>
+        public static void Send(Socket handler, string data)
+        {
+            // Convert the string data to byte data using 
+            // ASCII encoding.
+            byte[] byteData = Encoding.ASCII.GetBytes(data);
+
+            // Begin sending the data to the remote socket 
+            // client.
+            handler.BeginSend(byteData, 0, byteData.Length, 0,
+                new AsyncCallback(SendCallback), handler);
+        }
+
         // Callbacks for socket connection
 
         /// <summary>
@@ -174,14 +192,23 @@ namespace AlphaOwl.UniversalController.Utilities
         /// <param name="ar">Result of the async task.</param>
         private static void SendCallback(IAsyncResult ar)
         {
-            // Retrieve the socket from the state object.
-            Socket handler = (Socket)ar.AsyncState;
+            try
+            {
+                // Retrieve the socket from the state object.
+                Socket handler = (Socket)ar.AsyncState;
 
-            // Complete sending the data to the remote device.
-            int bytesSent = handler.EndSend(ar);
-            DebugUtilities.Log(
-                TAG + "Send " + bytesSent + " bytes to client."
-            );
+                // Complete sending the data to the remote device.
+                int bytesSent = handler.EndSend(ar);
+                DebugUtilities.Log(
+                    TAG + "Send " + bytesSent + " bytes to client."
+                );
+
+                messageSender.OnSendComplete();
+            }
+            catch (Exception ex)
+            {
+                messageSender.OnSendFail(ex.Message);
+            }
         }
 
         // Interfaces / Listeners
