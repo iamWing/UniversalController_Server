@@ -6,7 +6,7 @@ namespace AlphaOwl.UniversalController.Utilities
     /// <summary>
     /// Type of the log message.
     /// </summary>
-    enum LogType
+    public enum LogType
     {
         Normal,
         Warning,
@@ -16,7 +16,7 @@ namespace AlphaOwl.UniversalController.Utilities
     /// <summary>
     /// Customised utilities for debug usage across the library.
     /// </summary>
-    static class DebugUtilities
+    public static class DebugUtilities
     {
         public static bool Enable;
 
