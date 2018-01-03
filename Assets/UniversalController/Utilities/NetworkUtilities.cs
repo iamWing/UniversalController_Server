@@ -111,6 +111,16 @@ namespace AlphaOwl.UniversalController.Utilities
                 new AsyncCallback(SendCallback), handler);
         }
 
+        /// <summary>
+        /// Shutdown the specificed socket.
+        /// </summary>
+        /// <param name="socket">The socket that needs to be 
+        /// shutdown.</param>
+        public static void ShutdownSocket(Socket socket)
+        {
+            socket.Shutdown(SocketShutdown.Both);
+        }
+
         // Callbacks for socket connection
 
         /// <summary>
