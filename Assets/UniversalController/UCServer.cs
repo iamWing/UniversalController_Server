@@ -53,6 +53,14 @@ namespace AlphaOwl.UniversalController
             NetworkUtilities.StartListening(serverSocket, this, this);
         }
 
+        /// <summary>
+        /// Shutdown the server socket.
+        /// </summary>
+        public void Shutdown()
+        {
+            NetworkUtilities.ShutdownSocket(serverSocket);
+        }
+
         /* Private methods */
 
         /// <summary>
