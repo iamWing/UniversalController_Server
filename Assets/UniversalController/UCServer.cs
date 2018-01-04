@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Net.Sockets;
 using AlphaOwl.UniversalController.Utilities;
 
 namespace AlphaOwl.UniversalController
@@ -37,9 +38,19 @@ namespace AlphaOwl.UniversalController
             if (instance == null)
             {
                 instance = new UCServer(port, maxConn);
+                instance.Start(); // Start server.
             }
 
             return instance;
+        }
+
+        /// <summary>
+        /// Fire up the server by places the server socket to 
+        /// listening state.
+        /// </summary>
+        public void Start()
+        {
+            NetworkUtilities.StartListening(serverSocket, this, this);
         }
 
         /* Private methods */
@@ -57,7 +68,6 @@ namespace AlphaOwl.UniversalController
 
             players = new string[maxConn];
         }
-
 
         /* Override methods from NetworkUtilities.IMessageReceiver */
 
