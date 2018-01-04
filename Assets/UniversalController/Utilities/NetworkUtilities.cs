@@ -76,16 +76,17 @@ namespace AlphaOwl.UniversalController.Utilities
         /// to accept connections.
         /// </summary>
         /// <param name="socket"></param>
-        /// <param name="backlog">The maximum length of the 
-        /// pending connections queue.</param>
         /// <param name="receiver">An instance of 
         /// NetworkUtilities.IMessageReceiver that handles the 
         /// callbacks for receiving data from remote socket client.</param>
         /// <param name="sender">And instance of 
         /// NetworkUtilities.IMessageSender that handles the 
         /// callbacks for sending data to remote socket client.</param>
-        public static void StartListening(Socket socket, int backlog, 
-        IMessageReceiver receiver, IMessageSender sender)
+        /// <param name="backlog">The maximum length of the 
+        /// pending connections queue. Default value is 10.</param>
+        public static void StartListening(Socket socket,  
+        IMessageReceiver receiver, IMessageSender sender, 
+        int backlog = 10)
         {
             messageReceiver = receiver;
             messageSender = sender;
