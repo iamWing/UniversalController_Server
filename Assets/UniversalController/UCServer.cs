@@ -101,8 +101,9 @@ namespace AlphaOwl.UniversalController
 
         /* Override methods from NetworkUtilities.IMessageReceiver */
 
-        public void OnReceiveComplete(string msg)
+        public void OnReceiveComplete(Socket handler, string msg)
         {
+
         }
 
         public void OnReceiveFail(string err)

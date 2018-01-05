@@ -188,7 +188,7 @@ namespace AlphaOwl.UniversalController.Utilities
                     {
                         // All the data has been read from the client. 
                         // Pass the content to the listener.
-                        messageReceiver.OnReceiveComplete(content);
+                        messageReceiver.OnReceiveComplete(handler, content);
                     }
                     else
                     {
@@ -245,9 +245,11 @@ namespace AlphaOwl.UniversalController.Utilities
             /// after the whole message is received from 
             /// remote socket client.
             /// </summary>
+            /// <param name="handler">Socket that connects 
+            /// with the client.</param>
             /// <param name="msg">Received message from 
             /// remote socket client.</param>
-            void OnReceiveComplete(string msg);
+            void OnReceiveComplete(Socket handler, string msg);
 
             /// <summary>
             /// Implement this method to receive callback 
