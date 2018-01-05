@@ -76,16 +76,17 @@ namespace AlphaOwl.UniversalController.Utilities
         /// to accept connections.
         /// </summary>
         /// <param name="socket"></param>
-        /// <param name="backlog">The maximum length of the 
-        /// pending connections queue.</param>
         /// <param name="receiver">An instance of 
         /// NetworkUtilities.IMessageReceiver that handles the 
         /// callbacks for receiving data from remote socket client.</param>
         /// <param name="sender">And instance of 
         /// NetworkUtilities.IMessageSender that handles the 
         /// callbacks for sending data to remote socket client.</param>
-        public static void StartListening(Socket socket, int backlog, 
-        IMessageReceiver receiver, IMessageSender sender)
+        /// <param name="backlog">The maximum length of the 
+        /// pending connections queue. Default value is 10.</param>
+        public static void StartListening(Socket socket,  
+        IMessageReceiver receiver, IMessageSender sender, 
+        int backlog = 10)
         {
             messageReceiver = receiver;
             messageSender = sender;
@@ -187,7 +188,7 @@ namespace AlphaOwl.UniversalController.Utilities
                     {
                         // All the data has been read from the client. 
                         // Pass the content to the listener.
-                        messageReceiver.OnReceiveComplete(content);
+                        messageReceiver.OnReceiveComplete(handler, content);
                     }
                     else
                     {
@@ -244,9 +245,11 @@ namespace AlphaOwl.UniversalController.Utilities
             /// after the whole message is received from 
             /// remote socket client.
             /// </summary>
+            /// <param name="handler">Socket that connects 
+            /// with the client.</param>
             /// <param name="msg">Received message from 
             /// remote socket client.</param>
-            void OnReceiveComplete(string msg);
+            void OnReceiveComplete(Socket handler, string msg);
 
             /// <summary>
             /// Implement this method to receive callback 
