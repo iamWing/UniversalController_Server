@@ -55,7 +55,7 @@ namespace AlphaOwl.UniversalController
         /// == true.</param>
         /// <returns>A newly initialised instance or an existing 
         /// instance of UCServer.</returns>
-        public static UCServer Init(ICommandHandler handler, 
+        public static UCServer Init(ICommandHandler handler,
                                     int port = DefaultPort,
                                     int maxConn = DefaultMaxConnections,
                                     bool debug = false)
@@ -86,6 +86,18 @@ namespace AlphaOwl.UniversalController
         public void Shutdown()
         {
             NetworkUtilities.ShutdownSocket(serverSocket);
+        }
+
+        /// <summary>
+        /// Send message to a connected player.
+        /// </summary>
+        /// <param name="targetPlayer">ID of the selected player 
+        /// which uses to get the related socket.</param>
+        /// <param name="msg">String that needs to be sent to 
+        /// the player.</param>
+        public void SendMsg(int targetPlayer, string msg)
+        {
+            NetworkUtilities.Send(clients[targetPlayer], msg);
         }
 
         /* Private methods */
@@ -147,7 +159,7 @@ namespace AlphaOwl.UniversalController
         }
 
         /* Interfaces / Listeners */
-        
+
         public interface ICommandHandler
         {
             void Register(int playerId, string playerName);
