@@ -8,8 +8,10 @@ namespace AlphaOwl.UniversalController
     /// Prefix of the commands used to communicate with 
     /// the clients.
     /// </summary>
-    struct Command
+    public struct Command
     {
+        public const char Separator = ':';
+
         /* For commands received */
         public const string Register = "REGISTER";
         public const string Deregister = "DEREGISTER";
@@ -21,6 +23,7 @@ namespace AlphaOwl.UniversalController
 
         // Replies to client
         public const string PlayerId = "PLAYER_ID";
+        public const string InvalidCmd = "INVALID_COMMAND";
 
         // For test usage
         public const string Test = "TEST_CMD";
@@ -120,7 +123,7 @@ namespace AlphaOwl.UniversalController
 
         public void OnReceiveComplete(Socket handler, string msg)
         {
-            string[] cmd = msg.Split(':');
+            string[] cmd = msg.Split(Command.Separator);
 
             switch (cmd[0])
             {
