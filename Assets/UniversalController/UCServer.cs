@@ -4,6 +4,28 @@ using AlphaOwl.UniversalController.Utilities;
 
 namespace AlphaOwl.UniversalController
 {
+    /// <summary>
+    /// Prefix of the commands used to communicate with 
+    /// the clients.
+    /// </summary>
+    struct Command
+    {
+        /* For commands received */
+        public const string Register = "REGISTER";
+        public const string Deregister = "DEREGISTER";
+
+        // Player actions
+        public const string KeyDown = "KEY_DOWN";
+        public const string Joystick = "JOYSTICK";
+        public const string Gyro = "GYRO";
+
+        // Replies to client
+        public const string PlayerId = "PLAYER_ID";
+
+        // For test usage
+        public const string Test = "TEST_CMD";
+    }
+
     public class UCServer : NetworkUtilities.IMessageReceiver,
     NetworkUtilities.IMessageSender
     {
@@ -81,7 +103,6 @@ namespace AlphaOwl.UniversalController
 
         public void OnReceiveComplete(string msg)
         {
-
         }
 
         public void OnReceiveFail(string err)
