@@ -39,10 +39,14 @@ namespace AlphaOwl.UniversalController
         private Socket serverSocket;
         private Socket[] clients; // Registered clients.
 
+        private ICommandHandler cmdHandler;
+
         /// <summary>
         /// Returns the existing instance or create a new instance 
         /// of UCServer.
         /// </summary>
+        /// <param name="handler">An instance of ICommandHandler that 
+        /// handles the commands received.</param>
         /// <param name="port">Port number for the server socket to 
         /// bind to. Default port is 28910.</param>
         /// <param name="maxConn">Maximum number of connections for 
@@ -51,7 +55,8 @@ namespace AlphaOwl.UniversalController
         /// == true.</param>
         /// <returns>A newly initialised instance or an existing 
         /// instance of UCServer.</returns>
-        public static UCServer Init(int port = DefaultPort,
+        public static UCServer Init(ICommandHandler handler, 
+                                    int port = DefaultPort,
                                     int maxConn = DefaultMaxConnections,
                                     bool debug = false)
         {
@@ -139,6 +144,17 @@ namespace AlphaOwl.UniversalController
         public void OnSendFail(string err)
         {
 
+        }
+
+        /* Interfaces / Listeners */
+        
+        public interface ICommandHandler
+        {
+            void Register(int playerId, string playerName);
+            void Deregister(int playerId);
+            void KeyDown(int playerId, string key, string extra = "");
+            void Gyro(int playerId, float x, float y, float z);
+            void Joystick(int playerId, float x, float y);
         }
     }
 }
