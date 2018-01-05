@@ -37,7 +37,7 @@ namespace AlphaOwl.UniversalController
         private const int DefaultMaxConnections = 4;
 
         private Socket serverSocket;
-        private string[] players; // Connected players.
+        private Socket[] clients; // Registered clients.
 
         /// <summary>
         /// Returns the existing instance or create a new instance 
@@ -96,14 +96,32 @@ namespace AlphaOwl.UniversalController
                             NetworkUtilities.GetIpAddress(),
                             port);
 
-            players = new string[maxConn];
+            clients = new Socket[maxConn];
         }
 
         /* Override methods from NetworkUtilities.IMessageReceiver */
 
         public void OnReceiveComplete(Socket handler, string msg)
         {
+            string[] cmd = msg.Split(':');
 
+            switch (cmd[0])
+            {
+                case Command.Register:
+                case Command.Deregister:
+                default:
+                    int playerId;
+                    if (int.TryParse(cmd[0], out playerId))
+                    {
+                        // If the command is from a registered 
+                        // player.
+                    }
+                    else
+                    {
+                        // Invalid command.
+                    }
+                    break;
+            }
         }
 
         public void OnReceiveFail(string err)
