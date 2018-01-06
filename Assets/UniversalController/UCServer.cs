@@ -202,14 +202,33 @@ namespace AlphaOwl.UniversalController
             }
             else
             {
-                DebugUtilities.Log(
-                    msg: Command.PlayerNotFound + " {" + Command.PlayerId +
-                    playerId + "}",
-                    type: LogType.Error
-                );
-
-                NetworkUtilities.Send(socket, Command.PlayerNotFound);
+                PlayerNotFound(socket, playerId);
             }
+        }
+
+        private void HandleInputCommands(Socket socket, int playerId,
+        string[] cmd)
+        {
+            switch (cmd[0])
+            {
+                case Command.Gyro:
+                case Command.Joystick:
+                case Command.KeyDown:
+                default:
+                    break;
+            }
+        }
+
+        private void PlayerNotFound(Socket socket, int playerId)
+        {
+            DebugUtilities.Log(
+                                msg: Command.PlayerNotFound + " {" + Command.PlayerId +
+                                playerId + "}",
+                                type: LogType.Error
+                            );
+
+            NetworkUtilities.Send(socket, Command.PlayerNotFound);
+
         }
 
         private void InvalidCommand(Socket socket, string cmd)
@@ -267,11 +286,23 @@ namespace AlphaOwl.UniversalController
                         {
                             // If the command is from a registered 
                             // player.
+                            if (clients[playerId] != null)
+                            {
+                                HandleInputCommands(
+                                    handler, playerId,
+                                    // Create a new command array
+                                    GeneralUtilities.ArrayCopy<string>(
+                                        cmd, 1, cmd.Length
+                                    )
+                                );
+                            }
+                            else
+                                PlayerNotFound(handler, playerId);
                         }
                         else
-                        {
-                            // Invalid command.
-                        }
+                            // Cannot parse to int
+                            InvalidCommand(handler, msg);
+
                         break;
                     }
             }
