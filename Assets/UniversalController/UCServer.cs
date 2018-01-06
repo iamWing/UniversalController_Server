@@ -71,6 +71,8 @@ namespace AlphaOwl.UniversalController
                 instance.Start(); // Start server.
             }
 
+            instance.cmdHandler = handler;
+
             return instance;
         }
 
