@@ -121,6 +121,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 187697976}
+  - component: {fileID: 187697975}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -128,6 +129,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &187697975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 187697974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9363a876678e11c438d4107af88fadea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 0}
+  portNumber: 28910
+  maxConnections: 2
+  debug: 0
 --- !u!4 &187697976
 Transform:
   m_ObjectHideFlags: 0
