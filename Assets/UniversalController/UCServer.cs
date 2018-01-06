@@ -13,6 +13,9 @@ namespace AlphaOwl.UniversalController
         private const int DefaultPort = 28910;
         private const int DefaultMaxConnections = 4;
 
+        private const float MinF = -1f;
+        private const float MaxF = 1f;
+
         private Socket serverSocket;
         private Socket[] clients; // Registered clients.
 
@@ -152,6 +155,11 @@ namespace AlphaOwl.UniversalController
             }
         }
 
+        private bool isValidFloat(float val, float min, float max)
+        {
+            return val <= max && val >= min;
+        }
+
         /* Command handling */
 
         private void RegisterClient(Socket socket, string playerName)
@@ -208,7 +216,16 @@ namespace AlphaOwl.UniversalController
                 float result;
 
                 if (float.TryParse(cmd[i], out result))
-                    pos[i - 1] = result;
+                {
+                    if (isValidFloat(result, MinF, MaxF))
+                        pos[i - 1] = result;
+                    else
+                    {
+                        // Invalid float value
+                        InvalidCommand(socket, fullCmd);
+                        return;
+                    }
+                }
                 else
                 {
                     // Cannot parse to float
@@ -233,7 +250,16 @@ namespace AlphaOwl.UniversalController
                 float result;
 
                 if (float.TryParse(cmd[i], out result))
-                    pos[i - 1] = result;
+                {
+                    if (isValidFloat(result, MinF, MaxF))
+                        pos[i - 1] = result;
+                    else
+                    {
+                        // Invalid float value
+                        InvalidCommand(socket, fullCmd);
+                        return;
+                    }
+                }
                 else
                 {
                     // Cannot parse to float
