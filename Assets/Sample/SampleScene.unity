@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 187697976}
   - component: {fileID: 187697975}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Network Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -140,10 +140,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9363a876678e11c438d4107af88fadea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 0}
+  playerPrefab: {fileID: 114444736704611714, guid: 454d28a5f98621e4dac9b62c3a111e7b,
+    type: 2}
   portNumber: 28910
   maxConnections: 2
-  debug: 0
+  debug: 1
 --- !u!4 &187697976
 Transform:
   m_ObjectHideFlags: 0
