@@ -90,6 +90,7 @@ namespace AlphaOwl.UniversalController
 
         public void Gyro(int playerId, float x, float y, float z)
         {
+            players[playerId].Gyro(x, y, z);
         }
 
         public void Joystick(int playerId, float x, float y)

@@ -165,6 +165,35 @@ namespace AlphaOwl.UniversalController
             clients = new Socket[maxConn];
         }
 
+        private void HandleInputCommands(Socket socket, int playerId,
+                string[] cmd, string fullCmd)
+        {
+            switch (cmd[0])
+            {
+                case Command.Gyro:
+                    // PLayer ID has been taken out
+                    if (cmd.Length == Command.GyroLength - 1)
+                        GyroCommand(
+                            socket, playerId,
+                            GeneralUtilities.ArrayCopy<string>(
+                                cmd, 1, cmd.Length
+                            ),
+                            fullCmd
+                        );
+                    else
+                        // Command length not match.
+                        InvalidCommand(socket, fullCmd);
+
+                    break;
+                case Command.Joystick:
+                case Command.KeyDown:
+                default:
+                    break;
+            }
+        }
+
+        /* Command handling */
+
         private void RegisterClient(Socket socket, string playerName)
         {
             for (int i = 0; i < clients.Length; i++)
@@ -206,18 +235,32 @@ namespace AlphaOwl.UniversalController
             }
         }
 
-        private void HandleInputCommands(Socket socket, int playerId,
-        string[] cmd)
+        private void GyroCommand(Socket socket, int playerId, string[] cmd,
+        string fullCmd)
         {
-            switch (cmd[0])
+            // Player ID has been taken out & Command.Gyro prefix needs
+            // to be taken away as well.
+            float[] pos = new float[Command.GyroLength - 2];
+
+            // Index starts from 1 to skip the player ID
+            for (int i = 1; i < cmd.Length; i++)
             {
-                case Command.Gyro:
-                case Command.Joystick:
-                case Command.KeyDown:
-                default:
-                    break;
+                float result;
+
+                if (float.TryParse(cmd[i], out result))
+                    pos[i - 1] = result;
+                else
+                {
+                    // Cannot parse to float
+                    InvalidCommand(socket, fullCmd);
+                    return;
+                }
             }
+
+            cmdHandler.Gyro(playerId, x: pos[0], y: pos[1], z: pos[2]);
         }
+
+        /* Error handling */
 
         private void PlayerNotFound(Socket socket, int playerId)
         {
@@ -293,7 +336,8 @@ namespace AlphaOwl.UniversalController
                                     // Create a new command array
                                     GeneralUtilities.ArrayCopy<string>(
                                         cmd, 1, cmd.Length
-                                    )
+                                    ),
+                                    msg
                                 );
                             }
                             else
