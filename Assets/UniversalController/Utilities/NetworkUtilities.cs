@@ -117,7 +117,7 @@ namespace AlphaOwl.UniversalController.Utilities
         {
             // Convert the string data to byte data using 
             // ASCII encoding.
-            byte[] byteData = Encoding.ASCII.GetBytes(data);
+            byte[] byteData = Encoding.ASCII.GetBytes(data + EndTag);
 
             // Begin sending the data to the remote socket 
             // client.
