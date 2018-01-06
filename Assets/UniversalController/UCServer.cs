@@ -100,7 +100,7 @@ namespace AlphaOwl.UniversalController
         private UCServer(int port, int maxConn)
         {
             serverSocket = NetworkUtilities.InitSocketServer(
-                            NetworkUtilities.GetIpAddress(),
+                            NetworkUtilities.GetIPv4Address(),
                             port);
 
             clients = new Socket[maxConn];

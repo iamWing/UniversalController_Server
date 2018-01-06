@@ -24,11 +24,24 @@ namespace AlphaOwl.UniversalController.Utilities
         /// Fetches the local IP address of the machine.
         /// </summary>
         /// <returns>Local IP address.</returns>
-        public static string GetIpAddress()
+        public static string GetIPv4Address()
         {
             string hostname = Dns.GetHostName();
 
-            return Dns.GetHostEntry(hostname).AddressList[0].ToString();
+            int addressLength = Dns.GetHostEntry(hostname).AddressList.Length;
+
+            string ipv4Addr = "127.0.0.1";
+
+            for (int i = 0; i < addressLength; i++)
+            {
+                string ip = 
+                    Dns.GetHostEntry(hostname).AddressList[i].ToString();
+
+                if (ip.Split('.').Length == 4)
+                    ipv4Addr = ip;
+            }
+
+            return ipv4Addr;
         }
 
         /* Socket connections related */
