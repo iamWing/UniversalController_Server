@@ -100,6 +100,7 @@ namespace AlphaOwl.UniversalController
 
         public void KeyDown(int playerId, string key, string extra = "")
         {
+            players[playerId].KeyDown(key, extra);
         }
 
     }

@@ -196,6 +196,18 @@ namespace AlphaOwl.UniversalController
                     }
                     else goto default;
                 case Command.KeyDown:
+                    if (cmd.Length == Command.KeyDownLength - 1
+                        || cmd.Length == Command.KeyDownExtraLength - 1)
+                    {
+                        KeyDownCommand(
+                            playerId,
+                            GeneralUtilities.ArrayCopy<string>(
+                                cmd, 1, cmd.Length
+                            )
+                        );
+                        break;
+                    }
+                    else goto default;
                 default:
                     InvalidCommand(socket, fullCmd);
                     break;
@@ -293,6 +305,16 @@ namespace AlphaOwl.UniversalController
             }
 
             cmdHandler.Joystick(playerId, x: pos[0], y: pos[1]);
+        }
+
+        private void KeyDownCommand(int playerId, string[] cmd)
+        {
+            bool hasExtra = (cmd.Length == Command.KeyDownExtraLength - 1);
+
+            if (hasExtra)
+                cmdHandler.KeyDown(playerId, cmd[1], cmd[2]);
+            else
+                cmdHandler.KeyDown(playerId, cmd[1]);
         }
 
         /* Error handling */
