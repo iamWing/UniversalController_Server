@@ -14,6 +14,9 @@ namespace AlphaOwl.UniversalController.Utilities
     {
         private const string TAG = "NetworkUtilities: ";
 
+        // The end tag of the messages.
+        private const string EndTag = "<EOC>";
+
         // The null value for int field.
         private const int OptionalInt = -1;
 
@@ -131,7 +134,7 @@ namespace AlphaOwl.UniversalController.Utilities
         {
             DebugUtilities.Log("Closing socket on port " +
             socket.LocalEndPoint);
-            
+
             socket.Shutdown(SocketShutdown.Both);
         }
 
@@ -187,11 +190,15 @@ namespace AlphaOwl.UniversalController.Utilities
                     // Check for end-of-content tag. If it is not there, 
                     // read more data.
                     content = state.sb.ToString();
-                    if (content.IndexOf("<EOC>") > -1)
+                    if (content.IndexOf(EndTag) > -1)
                     {
                         // All the data has been read from the client. 
+                        string trimmedContent = 
+                            content.Substring(0,content.LastIndexOf(EndTag));
+
                         // Pass the content to the listener.
-                        messageReceiver.OnReceiveComplete(handler, content);
+                        messageReceiver.OnReceiveComplete(
+                            handler, trimmedContent);
                     }
                     else
                     {
