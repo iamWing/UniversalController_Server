@@ -55,8 +55,9 @@ namespace AlphaOwl.UniversalController
         public const int GyroLength = 5;
 
         // Replies to client
-        public const string PlayerId = "PLAYER_ID";
+        public const string PlayerId = "PLAYER_ID:";
         public const string ServerShutDown = "SERVER_SHUTDOWN";
+        public const string ServerFull = "SERVER_FULL";
         public const string InvalidCmd = "INVALID_COMMAND";
 
         // For test usage
@@ -163,6 +164,31 @@ namespace AlphaOwl.UniversalController
             clients = new Socket[maxConn];
         }
 
+        private void RegisterClient(Socket socket, string playerName)
+        {
+            for (int i = 0; i < clients.Length; i++)
+            {
+                if (clients[i] == null)
+                {
+                    clients[i] = socket;
+                    cmdHandler.Register(i, playerName);
+
+                    // Replies player ID
+                    // example -  PLAYER_ID:1
+                    SendMsg(i, Command.PlayerId + i);
+
+                    DebugUtilities.Log(playerName +
+                    "registered with player ID " + i);
+
+                    return;
+                }
+            }
+
+            DebugUtilities.Log("Unable to register player " + playerName +
+            ". Maximum player numbers reached.");
+            NetworkUtilities.Send(socket, Command.ServerFull);
+        }
+
         /* Override methods from NetworkUtilities.IMessageReceiver */
 
         public void OnReceiveComplete(Socket handler, string msg)
@@ -172,6 +198,19 @@ namespace AlphaOwl.UniversalController
             switch (cmd[0])
             {
                 case Command.Register:
+                    if (cmd.Length == Command.RegisterLength)
+                    {
+                        RegisterClient(handler, msg);
+                    }
+                    else
+                    {
+                        DebugUtilities.Log(
+                            msg: Command.InvalidCmd + " {" + msg + "}",
+                            type: LogType.Warning);
+
+                        NetworkUtilities.Send(handler, Command.InvalidCmd);
+                    }
+                    break;
                 case Command.Deregister:
                 default:
                     int playerId;
@@ -193,7 +232,7 @@ namespace AlphaOwl.UniversalController
 
         }
 
-        /* Override methods from NetworkUtilities.IMessageSender */
+        /* Implement methods from NetworkUtilities.IMessageSender */
 
         public void OnSendComplete()
         {

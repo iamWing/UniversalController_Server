@@ -12,6 +12,10 @@ namespace AlphaOwl.UniversalController
         {
             this.playerId = playerId;
             this.playerName = playerName;
+
+            name = playerName;
+
+            OnPlayerRegisterAction();
         }
 
         public virtual void KeyDown(string key, string extra = "")

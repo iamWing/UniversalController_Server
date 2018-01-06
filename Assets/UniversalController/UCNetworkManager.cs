@@ -8,11 +8,13 @@ namespace AlphaOwl.UniversalController
         private static UCNetworkManager instance;
         private static UCServer server;
 
-        [SerializeField] protected GameObject playerPrefab;
+        [SerializeField] protected UCPlayer playerPrefab;
 
         [SerializeField] protected int portNumber;
         [SerializeField] protected int maxConnections;
         [SerializeField] protected bool debug = false;
+
+        private UCPlayer[] players;
 
         void Awake()
         {
@@ -24,6 +26,8 @@ namespace AlphaOwl.UniversalController
         {
             if (server == null)
             {
+                players = new UCPlayer[maxConnections];
+
                 server = UCServer.Init(this, portNumber,
                 maxConnections, debug);
             }
@@ -70,10 +74,12 @@ namespace AlphaOwl.UniversalController
             }
         }
 
-        /* Override methods from UCServer.ICommandHandler */
+        /* Implement methods from UCServer.ICommandHandler */
 
         public void Register(int playerId, string playerName)
         {
+            players[playerId] = (UCPlayer)Instantiate(playerPrefab);
+            players[playerId].OnPlayerRegister(playerId, playerName);
         }
 
         public void Deregister(int playerId)
