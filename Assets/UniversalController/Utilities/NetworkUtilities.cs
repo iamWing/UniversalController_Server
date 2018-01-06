@@ -34,7 +34,7 @@ namespace AlphaOwl.UniversalController.Utilities
 
             for (int i = 0; i < addressLength; i++)
             {
-                string ip = 
+                string ip =
                     Dns.GetHostEntry(hostname).AddressList[i].ToString();
 
                 if (ip.Split('.').Length == 4)
@@ -216,15 +216,15 @@ namespace AlphaOwl.UniversalController.Utilities
                         // Pass the content to the listener.
                         messageReceiver.OnReceiveComplete(
                             handler, trimmedContent);
+
+                        // Clean state data string
+                        state.sb = new StringBuilder();
                     }
-                    else
-                    {
-                        // Not all data received. Get more.
-                        handler.BeginReceive(
-                            state.buffer, 0, StateObject.bufferSize, 0,
-                            new AsyncCallback(ReceiveCallback), state
-                        );
-                    }
+                    //  Continue to receive data
+                    handler.BeginReceive(
+                        state.buffer, 0, StateObject.bufferSize, 0,
+                        new AsyncCallback(ReceiveCallback), state
+                    );
                 }
             }
             catch (Exception ex)
