@@ -132,11 +132,14 @@ namespace AlphaOwl.UniversalController.Utilities
         /// shutdown.</param>
         public static void ShutdownSocket(Socket socket)
         {
-            DebugUtilities.Log("Closing socket on port " +
-            socket.LocalEndPoint);
+            if (socket.Connected)
+            {
+                DebugUtilities.Log("Closing socket on port " +
+                socket.LocalEndPoint);
 
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Disconnect(false);
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Disconnect(false);
+            }
         }
 
         // Callbacks for socket connection
@@ -194,8 +197,8 @@ namespace AlphaOwl.UniversalController.Utilities
                     if (content.IndexOf(EndTag) > -1)
                     {
                         // All the data has been read from the client. 
-                        string trimmedContent = 
-                            content.Substring(0,content.LastIndexOf(EndTag));
+                        string trimmedContent =
+                            content.Substring(0, content.LastIndexOf(EndTag));
 
                         // Pass the content to the listener.
                         messageReceiver.OnReceiveComplete(
