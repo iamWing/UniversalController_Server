@@ -136,6 +136,7 @@ namespace AlphaOwl.UniversalController.Utilities
             socket.LocalEndPoint);
 
             socket.Shutdown(SocketShutdown.Both);
+            socket.Disconnect(false);
         }
 
         // Callbacks for socket connection
