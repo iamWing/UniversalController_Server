@@ -175,6 +175,8 @@ namespace AlphaOwl.UniversalController.Utilities
                 state.buffer, 0, StateObject.bufferSize, 0,
                 new AsyncCallback(ReceiveCallback), state
             );
+
+            listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
         }
 
         /// <summary>
