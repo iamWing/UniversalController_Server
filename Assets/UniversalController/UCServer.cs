@@ -1,70 +1,8 @@
-﻿using System;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using AlphaOwl.UniversalController.Utilities;
 
 namespace AlphaOwl.UniversalController
 {
-    /// <summary>
-    /// Prefix of the commands used to communicate with 
-    /// the clients.
-    /// </summary>
-    public struct Command
-    {
-        public const char Separator = ':';
-
-        /* For commands received */
-
-        /// <summary>
-        /// example - REGISTER:{player_name}
-        /// whereas player_name : string
-        /// </summary>
-        public const string Register = "REGISTER";
-        public const int RegisterLength = 2;
-
-        /// <summary>
-        /// example - DEREGISTER:{player_id}
-        /// whereas player_id : int
-        /// </summary>
-        public const string Deregister = "DEREGISTER";
-        public const int DeregisterLength = 2;
-
-        // Player actions
-
-        /// <summary>
-        /// example - {player_id}:KEY_DOWN:{key}
-        /// example w/ extra - {player_id}:KEY_DOWN:{key}:{extra}
-        /// whereas player_id : int; key : string; extra : string
-        /// </summary>
-        public const string KeyDown = "KEY_DOWN";
-        public const int KeyDownLength = 3;
-        public const int KeyDownExtraLength = 4;
-
-
-        /// <summary>
-        /// example - {player_id}:JOYSTICK:{x}:{y}
-        /// whereas player_id : int; x : float; y : float;
-        /// </summary>
-        public const string Joystick = "JOYSTICK";
-        public const int JoystickLength = 4;
-
-        /// <summary>
-        /// example - {player_id}:GYRO:{x}:{y}:{z}
-        /// whereas player_id : int; x : float; y : float; z : float;
-        /// </summary>
-        public const string Gyro = "GYRO";
-        public const int GyroLength = 5;
-
-        // Replies to client
-        public const string PlayerId = "PLAYER_ID:";
-        public const string PlayerNotFound = "PLAYER_NOT_FOUND";
-        public const string ServerShutDown = "SERVER_SHUTDOWN";
-        public const string ServerFull = "SERVER_FULL";
-        public const string InvalidCmd = "INVALID_COMMAND";
-
-        // For test usage
-        public const string Test = "TEST_CMD";
-    }
-
     public class UCServer : NetworkUtilities.IMessageReceiver,
     NetworkUtilities.IMessageSender
     {
@@ -129,7 +67,7 @@ namespace AlphaOwl.UniversalController
             for (int i = 0; i < clients.Length; i++)
             {
                 if (clients[i] != null)
-                    SendMsg(i, Command.ServerShutDown);
+                    SendMsg(i, UCCommand.ServerShutDown);
             }
 
             DebugUtilities.Log("Notified all clients.");
@@ -171,8 +109,8 @@ namespace AlphaOwl.UniversalController
             // PLayer ID has been taken out from the string array.
             switch (cmd[0])
             {
-                case Command.Gyro:
-                    if (cmd.Length == Command.GyroLength - 1)
+                case UCCommand.Gyro:
+                    if (cmd.Length == UCCommand.GyroLength - 1)
                     {
                         GyroCommand(
                             socket, playerId,
@@ -183,8 +121,8 @@ namespace AlphaOwl.UniversalController
                         break;
                     }
                     else goto default;
-                case Command.Joystick:
-                    if (cmd.Length == Command.JoystickLength - 1)
+                case UCCommand.Joystick:
+                    if (cmd.Length == UCCommand.JoystickLength - 1)
                     {
                         JoystickCommand(
                             socket, playerId,
@@ -195,9 +133,9 @@ namespace AlphaOwl.UniversalController
                         break;
                     }
                     else goto default;
-                case Command.KeyDown:
-                    if (cmd.Length == Command.KeyDownLength - 1
-                        || cmd.Length == Command.KeyDownExtraLength - 1)
+                case UCCommand.KeyDown:
+                    if (cmd.Length == UCCommand.KeyDownLength - 1
+                        || cmd.Length == UCCommand.KeyDownExtraLength - 1)
                     {
                         KeyDownCommand(
                             playerId,
@@ -227,7 +165,7 @@ namespace AlphaOwl.UniversalController
 
                     // Replies player ID
                     // example -  PLAYER_ID:1
-                    SendMsg(i, Command.PlayerId + i);
+                    SendMsg(i, UCCommand.PlayerId + i);
 
                     DebugUtilities.Log(playerName +
                     "registered with player ID " + i);
@@ -238,7 +176,7 @@ namespace AlphaOwl.UniversalController
 
             DebugUtilities.Log("Unable to register player " + playerName +
             ". Maximum player numbers reached.");
-            NetworkUtilities.Send(socket, Command.ServerFull);
+            NetworkUtilities.Send(socket, UCCommand.ServerFull);
         }
 
         private void DeregisterClient(Socket socket, int playerId)
@@ -262,7 +200,7 @@ namespace AlphaOwl.UniversalController
         {
             // Player ID has been taken out & Command.Gyro prefix needs
             // to be taken away as well.
-            float[] pos = new float[Command.GyroLength - 2];
+            float[] pos = new float[UCCommand.GyroLength - 2];
 
             // Index starts from 1 to skip the player ID
             for (int i = 1; i < cmd.Length; i++)
@@ -287,7 +225,7 @@ namespace AlphaOwl.UniversalController
         {
             // Player ID has been taken out & Command.Joystick prefix needs
             // to be taken away as well.
-            float[] pos = new float[Command.JoystickLength - 2];
+            float[] pos = new float[UCCommand.JoystickLength - 2];
 
             // Index starts from 1 to skip the player ID
             for (int i = 1; i < cmd.Length; i++)
@@ -309,7 +247,7 @@ namespace AlphaOwl.UniversalController
 
         private void KeyDownCommand(int playerId, string[] cmd)
         {
-            bool hasExtra = (cmd.Length == Command.KeyDownExtraLength - 1);
+            bool hasExtra = (cmd.Length == UCCommand.KeyDownExtraLength - 1);
 
             if (hasExtra)
                 cmdHandler.KeyDown(playerId, cmd[1], cmd[2]);
@@ -322,35 +260,35 @@ namespace AlphaOwl.UniversalController
         private void PlayerNotFound(Socket socket, int playerId)
         {
             DebugUtilities.Log(
-                                msg: Command.PlayerNotFound + " {" + Command.PlayerId +
-                                playerId + "}",
+                                msg: UCCommand.PlayerNotFound + " {" +
+                                UCCommand.PlayerId + playerId + "}",
                                 type: LogType.Error
                             );
 
-            NetworkUtilities.Send(socket, Command.PlayerNotFound);
+            NetworkUtilities.Send(socket, UCCommand.PlayerNotFound);
 
         }
 
         private void InvalidCommand(Socket socket, string cmd)
         {
             DebugUtilities.Log(
-                msg: Command.InvalidCmd + " {" + cmd + "}",
+                msg: UCCommand.InvalidCmd + " {" + cmd + "}",
                 type: LogType.Error
             );
 
-            NetworkUtilities.Send(socket, Command.InvalidCmd);
+            NetworkUtilities.Send(socket, UCCommand.InvalidCmd);
         }
 
         /* Implement methods from NetworkUtilities.IMessageReceiver */
 
         public void OnReceiveComplete(Socket handler, string msg)
         {
-            string[] cmd = msg.Split(Command.Separator);
+            string[] cmd = msg.Split(UCCommand.Separator);
 
             switch (cmd[0])
             {
-                case Command.Register:
-                    if (cmd.Length == Command.RegisterLength)
+                case UCCommand.Register:
+                    if (cmd.Length == UCCommand.RegisterLength)
                     {
                         RegisterClient(handler, msg);
                     }
@@ -359,9 +297,9 @@ namespace AlphaOwl.UniversalController
                         InvalidCommand(handler, msg);
                     }
                     break;
-                case Command.Deregister:
+                case UCCommand.Deregister:
                     {
-                        if (cmd.Length == Command.DeregisterLength)
+                        if (cmd.Length == UCCommand.DeregisterLength)
                         {
                             int playerId;
                             if (int.TryParse(cmd[1], out playerId))
