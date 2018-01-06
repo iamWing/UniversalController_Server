@@ -39,7 +39,7 @@ namespace AlphaOwl.UniversalController
         public const int KeyDownLength = 3;
         public const int KeyDownExtraLength = 4;
 
-        
+
         /// <summary>
         /// example - {player_id}:JOYSTICK:{x}:{y}
         /// whereas player_id : int; x : float; y : float;
@@ -56,6 +56,7 @@ namespace AlphaOwl.UniversalController
 
         // Replies to client
         public const string PlayerId = "PLAYER_ID";
+        public const string ServerShutDown = "SERVER_SHUTDOWN";
         public const string InvalidCmd = "INVALID_COMMAND";
 
         // For test usage
@@ -123,6 +124,14 @@ namespace AlphaOwl.UniversalController
         /// </summary>
         public void Shutdown()
         {
+            for (int i = 0; i < clients.Length; i++)
+            {
+                if (clients[i] != null) 
+                    SendMsg(i, Command.ServerShutDown);
+            }
+
+            DebugUtilities.Log("Notified all clients.");
+
             NetworkUtilities.ShutdownSocket(serverSocket);
         }
 

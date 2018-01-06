@@ -84,8 +84,8 @@ namespace AlphaOwl.UniversalController.Utilities
         /// callbacks for sending data to remote socket client.</param>
         /// <param name="backlog">The maximum length of the 
         /// pending connections queue. Default value is 10.</param>
-        public static void StartListening(Socket socket,  
-        IMessageReceiver receiver, IMessageSender sender, 
+        public static void StartListening(Socket socket,
+        IMessageReceiver receiver, IMessageSender sender,
         int backlog = 10)
         {
             messageReceiver = receiver;
@@ -129,6 +129,9 @@ namespace AlphaOwl.UniversalController.Utilities
         /// shutdown.</param>
         public static void ShutdownSocket(Socket socket)
         {
+            DebugUtilities.Log("Closing socket on port " +
+            socket.LocalEndPoint);
+            
             socket.Shutdown(SocketShutdown.Both);
         }
 
