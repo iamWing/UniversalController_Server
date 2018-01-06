@@ -20,19 +20,21 @@ namespace AlphaOwl.UniversalController
 
         public virtual void KeyDown(string key, string extra = "")
         {
-            DebugUtilities.Log("KEYDOWN: " + key, this);
+            DebugUtilities.Log(Command.KeyDown + ": " + key, this);
         }
 
         public virtual void Gyro(float x, float y, float z)
         {
             DebugUtilities.Log(
-                "GYRO: (x: " + x + ", y: " + y + ", z: " + z + ")", this);
+                Command.Gyro + ": (x: " + x + ", y: " + y +
+				 ", z: " + z + ")", this
+			);
         }
 
         public virtual void Joystick(float x, float y)
         {
             DebugUtilities.Log(
-				"JOYSTICK: (x: " + x + ", y: " + y + ")", this);
+				Command.Joystick + ": (x: " + x + ", y: " + y + ")", this);
         }
 
         protected virtual void OnPlayerRegisterAction()
