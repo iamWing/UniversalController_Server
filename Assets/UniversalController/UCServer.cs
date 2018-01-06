@@ -168,26 +168,36 @@ namespace AlphaOwl.UniversalController
         private void HandleInputCommands(Socket socket, int playerId,
                 string[] cmd, string fullCmd)
         {
+            // PLayer ID has been taken out from the string array.
             switch (cmd[0])
             {
                 case Command.Gyro:
-                    // PLayer ID has been taken out
                     if (cmd.Length == Command.GyroLength - 1)
+                    {
                         GyroCommand(
                             socket, playerId,
                             GeneralUtilities.ArrayCopy<string>(
                                 cmd, 1, cmd.Length
-                            ),
-                            fullCmd
+                            ), fullCmd
                         );
-                    else
-                        // Command length not match.
-                        InvalidCommand(socket, fullCmd);
-
-                    break;
+                        break;
+                    }
+                    else goto default;
                 case Command.Joystick:
+                    if (cmd.Length == Command.JoystickLength - 1)
+                    {
+                        JoystickCommand(
+                            socket, playerId,
+                            GeneralUtilities.ArrayCopy<string>(
+                                cmd, 1, cmd.Length
+                            ), fullCmd
+                        );
+                        break;
+                    }
+                    else goto default;
                 case Command.KeyDown:
                 default:
+                    InvalidCommand(socket, fullCmd);
                     break;
             }
         }
@@ -258,6 +268,31 @@ namespace AlphaOwl.UniversalController
             }
 
             cmdHandler.Gyro(playerId, x: pos[0], y: pos[1], z: pos[2]);
+        }
+
+        private void JoystickCommand(Socket socket, int playerId,
+        string[] cmd, string fullCmd)
+        {
+            // Player ID has been taken out & Command.Joystick prefix needs
+            // to be taken away as well.
+            float[] pos = new float[Command.JoystickLength - 2];
+
+            // Index starts from 1 to skip the player ID
+            for (int i = 1; i < cmd.Length; i++)
+            {
+                float result;
+
+                if (float.TryParse(cmd[i], out result))
+                    pos[i - 1] = result;
+                else
+                {
+                    // Cannot parse to float
+                    InvalidCommand(socket, fullCmd);
+                    return;
+                }
+            }
+
+            cmdHandler.Joystick(playerId, x: pos[0], y: pos[1]);
         }
 
         /* Error handling */

@@ -95,6 +95,7 @@ namespace AlphaOwl.UniversalController
 
         public void Joystick(int playerId, float x, float y)
         {
+            players[playerId].Joystick(x, y);
         }
 
         public void KeyDown(int playerId, string key, string extra = "")
