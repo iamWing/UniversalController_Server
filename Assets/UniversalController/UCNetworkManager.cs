@@ -8,11 +8,11 @@ namespace AlphaOwl.UniversalController
         private static UCNetworkManager instance;
         private static UCServer server;
 
-        [SerializeField] protected UCPlayer playerPrefab;
+        [SerializeField] private UCPlayer playerPrefab;
 
-        [SerializeField] protected int portNumber;
-        [SerializeField] protected int maxConnections;
-        [SerializeField] protected bool debug = false;
+        [SerializeField] private int portNumber = 28910;
+        [SerializeField] private int maxConnections = 2;
+        [SerializeField] private bool debug = false;
 
         private UCPlayer[] players;
 
