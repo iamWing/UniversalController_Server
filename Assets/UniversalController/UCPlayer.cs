@@ -18,6 +18,14 @@ namespace AlphaOwl.UniversalController
             OnPlayerRegisterAction();
         }
 
+		public virtual void OnPlayerDeregister()
+		{
+            DebugUtilities.Log("Player " + playerName + " deregistered." +
+            "\nPlayer ID: " + playerId, this);
+
+            Destroy(gameObject);
+        }
+
         public virtual void KeyDown(string key, string extra = "")
         {
             DebugUtilities.Log(Command.KeyDown + ": " + key, this);

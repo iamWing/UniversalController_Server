@@ -56,6 +56,7 @@ namespace AlphaOwl.UniversalController
 
         // Replies to client
         public const string PlayerId = "PLAYER_ID:";
+        public const string PlayerNotFound = "PLAYER_NOT_FOUND";
         public const string ServerShutDown = "SERVER_SHUTDOWN";
         public const string ServerFull = "SERVER_FULL";
         public const string InvalidCmd = "INVALID_COMMAND";
@@ -127,7 +128,7 @@ namespace AlphaOwl.UniversalController
         {
             for (int i = 0; i < clients.Length; i++)
             {
-                if (clients[i] != null) 
+                if (clients[i] != null)
                     SendMsg(i, Command.ServerShutDown);
             }
 
@@ -189,7 +190,39 @@ namespace AlphaOwl.UniversalController
             NetworkUtilities.Send(socket, Command.ServerFull);
         }
 
-        /* Override methods from NetworkUtilities.IMessageReceiver */
+        private void DeregisterClient(Socket socket, int playerId)
+        {
+            if (clients[playerId] != null)
+            {
+                cmdHandler.Deregister(playerId);
+
+                // Todo: Toggle this line for testing later.
+                NetworkUtilities.ShutdownSocket(clients[playerId]);
+                clients[playerId] = null; // release space for new client
+            }
+            else
+            {
+                DebugUtilities.Log(
+                    msg: Command.PlayerNotFound + " {" + Command.PlayerId +
+                    playerId + "}",
+                    type: LogType.Error
+                );
+
+                NetworkUtilities.Send(socket, Command.PlayerNotFound);
+            }
+        }
+
+        private void InvalidCommand(Socket socket, string cmd)
+        {
+            DebugUtilities.Log(
+                msg: Command.InvalidCmd + " {" + cmd + "}",
+                type: LogType.Error
+            );
+
+            NetworkUtilities.Send(socket, Command.InvalidCmd);
+        }
+
+        /* Implement methods from NetworkUtilities.IMessageReceiver */
 
         public void OnReceiveComplete(Socket handler, string msg)
         {
@@ -204,26 +237,43 @@ namespace AlphaOwl.UniversalController
                     }
                     else
                     {
-                        DebugUtilities.Log(
-                            msg: Command.InvalidCmd + " {" + msg + "}",
-                            type: LogType.Warning);
-
-                        NetworkUtilities.Send(handler, Command.InvalidCmd);
+                        InvalidCommand(handler, msg);
                     }
                     break;
                 case Command.Deregister:
+                    {
+                        if (cmd.Length == Command.DeregisterLength)
+                        {
+                            int playerId;
+                            if (int.TryParse(cmd[1], out playerId))
+                                DeregisterClient(handler, playerId);
+                            else
+                            {
+                                // Cannot parse to int
+                                InvalidCommand(handler, msg);
+                            }
+                        }
+                        else
+                        {
+                            // Command length not match
+                            InvalidCommand(handler, msg);
+                        }
+                        break;
+                    }
                 default:
-                    int playerId;
-                    if (int.TryParse(cmd[0], out playerId))
                     {
-                        // If the command is from a registered 
-                        // player.
+                        int playerId;
+                        if (int.TryParse(cmd[0], out playerId))
+                        {
+                            // If the command is from a registered 
+                            // player.
+                        }
+                        else
+                        {
+                            // Invalid command.
+                        }
+                        break;
                     }
-                    else
-                    {
-                        // Invalid command.
-                    }
-                    break;
             }
         }
 

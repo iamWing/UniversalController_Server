@@ -84,6 +84,8 @@ namespace AlphaOwl.UniversalController
 
         public void Deregister(int playerId)
         {
+            players[playerId].OnPlayerDeregister();
+            players[playerId] = null;
         }
 
         public void Gyro(int playerId, float x, float y, float z)
