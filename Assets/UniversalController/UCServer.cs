@@ -208,17 +208,16 @@ namespace AlphaOwl.UniversalController
         {
             // Player ID has been taken out & Command.Gyro prefix needs
             // to be taken away as well.
-            float[] pos = new float[UCCommand.GyroLength - 2];
+            float[] pos = new float[cmd.Length];
 
-            // Index starts from 1 to skip the player ID
-            for (int i = 1; i < cmd.Length; i++)
+            for (int i = 0; i < cmd.Length; i++)
             {
                 float result;
 
                 if (float.TryParse(cmd[i], out result))
                 {
                     if (isValidFloat(result, MinF, MaxF))
-                        pos[i - 1] = result;
+                        pos[i] = result;
                     else
                     {
                         // Invalid float value
@@ -242,17 +241,16 @@ namespace AlphaOwl.UniversalController
         {
             // Player ID has been taken out & Command.Joystick prefix needs
             // to be taken away as well.
-            float[] pos = new float[UCCommand.JoystickLength - 2];
+            float[] pos = new float[cmd.Length];
 
-            // Index starts from 1 to skip the player ID
-            for (int i = 1; i < cmd.Length; i++)
+            for (int i = 0; i < cmd.Length; i++)
             {
                 float result;
 
                 if (float.TryParse(cmd[i], out result))
                 {
                     if (isValidFloat(result, MinF, MaxF))
-                        pos[i - 1] = result;
+                        pos[i] = result;
                     else
                     {
                         // Invalid float value
