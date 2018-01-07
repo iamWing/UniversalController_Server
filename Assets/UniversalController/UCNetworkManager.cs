@@ -14,11 +14,15 @@ namespace AlphaOwl.UniversalController
         [SerializeField] private int maxConnections = 2;
         [SerializeField] private bool debug = false;
 
+        private Dispatcher dispatcher;
+
         private UCPlayer[] players;
 
         void Awake()
         {
             InstantiateManager();
+
+            dispatcher = new Dispatcher();
         }
 
         // Use this for initialization
@@ -31,6 +35,12 @@ namespace AlphaOwl.UniversalController
                 server = UCServer.Init(this, portNumber,
                 maxConnections, debug);
             }
+
+        }
+
+        void Update()
+        {
+            dispatcher.InvokePending();
         }
 
         void OnApplicationQuit()
@@ -78,29 +88,44 @@ namespace AlphaOwl.UniversalController
 
         public void Register(int playerId, string playerName)
         {
-            players[playerId] = (UCPlayer)Instantiate(playerPrefab);
-            players[playerId].OnPlayerRegister(playerId, playerName);
+            dispatcher.Invoke(() =>
+            {
+                players[playerId] = (UCPlayer)Instantiate(playerPrefab);
+                players[playerId].OnPlayerRegister(playerId, playerName);
+            });
         }
 
         public void Deregister(int playerId)
         {
-            players[playerId].OnPlayerDeregister();
-            players[playerId] = null;
+            dispatcher.Invoke(() =>
+            {
+                players[playerId].OnPlayerDeregister();
+                players[playerId] = null;
+            });
         }
 
         public void Gyro(int playerId, float x, float y, float z)
         {
-            players[playerId].Gyro(x, y, z);
+            dispatcher.Invoke(() =>
+            {
+                players[playerId].Gyro(x, y, z);
+            });
         }
 
         public void Joystick(int playerId, float x, float y)
         {
-            players[playerId].Joystick(x, y);
+            dispatcher.Invoke(() =>
+            {
+                players[playerId].Joystick(x, y);
+            });
         }
 
         public void KeyDown(int playerId, string key, string extra = "")
         {
-            players[playerId].KeyDown(key, extra);
+            dispatcher.Invoke(() =>
+            {
+                players[playerId].KeyDown(key, extra);
+            });
         }
 
     }
