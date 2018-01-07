@@ -118,7 +118,7 @@ namespace AlphaOwl.UniversalController
                         GyroCommand(
                             socket, playerId,
                             GeneralUtilities.ArrayCopy<string>(
-                                cmd, 1, cmd.Length
+                                cmd, 1, cmd.Length - 1
                             ), fullCmd
                         );
                         break;
@@ -130,7 +130,7 @@ namespace AlphaOwl.UniversalController
                         JoystickCommand(
                             socket, playerId,
                             GeneralUtilities.ArrayCopy<string>(
-                                cmd, 1, cmd.Length
+                                cmd, 1, cmd.Length - 1
                             ), fullCmd
                         );
                         break;
@@ -143,7 +143,7 @@ namespace AlphaOwl.UniversalController
                         KeyDownCommand(
                             playerId,
                             GeneralUtilities.ArrayCopy<string>(
-                                cmd, 1, cmd.Length
+                                cmd, 1, cmd.Length - 1
                             )
                         );
                         break;
@@ -189,7 +189,7 @@ namespace AlphaOwl.UniversalController
 
         private void DeregisterClient(Socket socket, int playerId)
         {
-            if (clients[playerId] != null)
+            if (playerId < clients.Length && clients[playerId] != null)
             {
                 cmdHandler.Deregister(playerId);
 
@@ -276,9 +276,9 @@ namespace AlphaOwl.UniversalController
             bool hasExtra = (cmd.Length == UCCommand.KeyDownExtraLength - 1);
 
             if (hasExtra)
-                cmdHandler.KeyDown(playerId, cmd[1], cmd[2]);
+                cmdHandler.KeyDown(playerId, cmd[0], cmd[1]);
             else
-                cmdHandler.KeyDown(playerId, cmd[1]);
+                cmdHandler.KeyDown(playerId, cmd[0]);
         }
 
         /* Error handling */
@@ -350,13 +350,14 @@ namespace AlphaOwl.UniversalController
                         {
                             // If the command is from a registered 
                             // player.
-                            if (clients[playerId] != null)
+                            if (playerId < clients.Length
+                                && clients[playerId] != null)
                             {
                                 HandleInputCommands(
                                     handler, playerId,
                                     // Create a new command array
                                     GeneralUtilities.ArrayCopy<string>(
-                                        cmd, 1, cmd.Length
+                                        cmd, 1, cmd.Length - 1
                                     ),
                                     msg
                                 );
