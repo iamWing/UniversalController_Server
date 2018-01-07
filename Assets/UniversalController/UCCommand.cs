@@ -56,8 +56,5 @@
         public const string ServerShutDown = "SERVER_SHUTDOWN";
         public const string ServerFull = "SERVER_FULL";
         public const string InvalidCmd = "INVALID_COMMAND";
-
-        // For test usage
-        public const string Test = "TEST_CMD";
     }
 }
