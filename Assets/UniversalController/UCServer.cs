@@ -13,6 +13,9 @@ namespace AlphaOwl.UniversalController
         private const int DefaultPort = 28910;
         private const int DefaultMaxConnections = 4;
 
+        private const float MinF = -1f;
+        private const float MaxF = 1f;
+
         private Socket serverSocket;
         private Socket[] clients; // Registered clients.
 
@@ -97,7 +100,7 @@ namespace AlphaOwl.UniversalController
         private UCServer(int port, int maxConn)
         {
             serverSocket = NetworkUtilities.InitSocketServer(
-                            NetworkUtilities.GetIpAddress(),
+                            NetworkUtilities.GetIPv4Address(),
                             port);
 
             clients = new Socket[maxConn];
@@ -115,7 +118,7 @@ namespace AlphaOwl.UniversalController
                         GyroCommand(
                             socket, playerId,
                             GeneralUtilities.ArrayCopy<string>(
-                                cmd, 1, cmd.Length
+                                cmd, 1, cmd.Length - 1
                             ), fullCmd
                         );
                         break;
@@ -127,7 +130,7 @@ namespace AlphaOwl.UniversalController
                         JoystickCommand(
                             socket, playerId,
                             GeneralUtilities.ArrayCopy<string>(
-                                cmd, 1, cmd.Length
+                                cmd, 1, cmd.Length - 1
                             ), fullCmd
                         );
                         break;
@@ -140,7 +143,7 @@ namespace AlphaOwl.UniversalController
                         KeyDownCommand(
                             playerId,
                             GeneralUtilities.ArrayCopy<string>(
-                                cmd, 1, cmd.Length
+                                cmd, 1, cmd.Length - 1
                             )
                         );
                         break;
@@ -150,6 +153,11 @@ namespace AlphaOwl.UniversalController
                     InvalidCommand(socket, fullCmd);
                     break;
             }
+        }
+
+        private bool isValidFloat(float val, float min, float max)
+        {
+            return val <= max && val >= min;
         }
 
         /* Command handling */
@@ -181,7 +189,7 @@ namespace AlphaOwl.UniversalController
 
         private void DeregisterClient(Socket socket, int playerId)
         {
-            if (clients[playerId] != null)
+            if (playerId < clients.Length && clients[playerId] != null)
             {
                 cmdHandler.Deregister(playerId);
 
@@ -200,15 +208,23 @@ namespace AlphaOwl.UniversalController
         {
             // Player ID has been taken out & Command.Gyro prefix needs
             // to be taken away as well.
-            float[] pos = new float[UCCommand.GyroLength - 2];
+            float[] pos = new float[cmd.Length];
 
-            // Index starts from 1 to skip the player ID
-            for (int i = 1; i < cmd.Length; i++)
+            for (int i = 0; i < cmd.Length; i++)
             {
                 float result;
 
                 if (float.TryParse(cmd[i], out result))
-                    pos[i - 1] = result;
+                {
+                    if (isValidFloat(result, MinF, MaxF))
+                        pos[i] = result;
+                    else
+                    {
+                        // Invalid float value
+                        InvalidCommand(socket, fullCmd);
+                        return;
+                    }
+                }
                 else
                 {
                     // Cannot parse to float
@@ -225,15 +241,23 @@ namespace AlphaOwl.UniversalController
         {
             // Player ID has been taken out & Command.Joystick prefix needs
             // to be taken away as well.
-            float[] pos = new float[UCCommand.JoystickLength - 2];
+            float[] pos = new float[cmd.Length];
 
-            // Index starts from 1 to skip the player ID
-            for (int i = 1; i < cmd.Length; i++)
+            for (int i = 0; i < cmd.Length; i++)
             {
                 float result;
 
                 if (float.TryParse(cmd[i], out result))
-                    pos[i - 1] = result;
+                {
+                    if (isValidFloat(result, MinF, MaxF))
+                        pos[i] = result;
+                    else
+                    {
+                        // Invalid float value
+                        InvalidCommand(socket, fullCmd);
+                        return;
+                    }
+                }
                 else
                 {
                     // Cannot parse to float
@@ -247,12 +271,12 @@ namespace AlphaOwl.UniversalController
 
         private void KeyDownCommand(int playerId, string[] cmd)
         {
-            bool hasExtra = (cmd.Length == UCCommand.KeyDownExtraLength - 1);
+            bool hasExtra = (cmd.Length == UCCommand.KeyDownExtraLength - 2);
 
             if (hasExtra)
-                cmdHandler.KeyDown(playerId, cmd[1], cmd[2]);
+                cmdHandler.KeyDown(playerId, cmd[0], cmd[1]);
             else
-                cmdHandler.KeyDown(playerId, cmd[1]);
+                cmdHandler.KeyDown(playerId, cmd[0]);
         }
 
         /* Error handling */
@@ -290,7 +314,7 @@ namespace AlphaOwl.UniversalController
                 case UCCommand.Register:
                     if (cmd.Length == UCCommand.RegisterLength)
                     {
-                        RegisterClient(handler, msg);
+                        RegisterClient(handler, cmd[1]);
                     }
                     else
                     {
@@ -324,13 +348,14 @@ namespace AlphaOwl.UniversalController
                         {
                             // If the command is from a registered 
                             // player.
-                            if (clients[playerId] != null)
+                            if (playerId < clients.Length
+                                && clients[playerId] != null)
                             {
                                 HandleInputCommands(
                                     handler, playerId,
                                     // Create a new command array
                                     GeneralUtilities.ArrayCopy<string>(
-                                        cmd, 1, cmd.Length
+                                        cmd, 1, cmd.Length - 1
                                     ),
                                     msg
                                 );

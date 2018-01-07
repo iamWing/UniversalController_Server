@@ -17,7 +17,7 @@ public class NetworkingTest {
         const string localhost = "127.0.0.1";
         string ip;
 
-        Assert.AreNotEqual(localhost, ip = NetworkUtilities.GetIpAddress());
+        Assert.AreNotEqual(localhost, ip = NetworkUtilities.GetIPv4Address());
         DebugUtilities.Log(TAG + ip);
     }
 

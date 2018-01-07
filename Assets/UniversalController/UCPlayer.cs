@@ -28,7 +28,8 @@ namespace AlphaOwl.UniversalController
 
         public virtual void KeyDown(string key, string extra = "")
         {
-            DebugUtilities.Log(UCCommand.KeyDown + ": " + key, this);
+            DebugUtilities.Log(UCCommand.KeyDown + ": " + key + 
+            "\nEXTRA: " + extra, this);
         }
 
         public virtual void Gyro(float x, float y, float z)

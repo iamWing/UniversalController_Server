@@ -24,11 +24,24 @@ namespace AlphaOwl.UniversalController.Utilities
         /// Fetches the local IP address of the machine.
         /// </summary>
         /// <returns>Local IP address.</returns>
-        public static string GetIpAddress()
+        public static string GetIPv4Address()
         {
             string hostname = Dns.GetHostName();
 
-            return Dns.GetHostEntry(hostname).AddressList[0].ToString();
+            int addressLength = Dns.GetHostEntry(hostname).AddressList.Length;
+
+            string ipv4Addr = "127.0.0.1";
+
+            for (int i = 0; i < addressLength; i++)
+            {
+                string ip =
+                    Dns.GetHostEntry(hostname).AddressList[i].ToString();
+
+                if (ip.Split('.').Length == 4)
+                    ipv4Addr = ip;
+            }
+
+            return ipv4Addr;
         }
 
         /* Socket connections related */
@@ -117,7 +130,7 @@ namespace AlphaOwl.UniversalController.Utilities
         {
             // Convert the string data to byte data using 
             // ASCII encoding.
-            byte[] byteData = Encoding.ASCII.GetBytes(data);
+            byte[] byteData = Encoding.ASCII.GetBytes(data + EndTag);
 
             // Begin sending the data to the remote socket 
             // client.
@@ -132,11 +145,14 @@ namespace AlphaOwl.UniversalController.Utilities
         /// shutdown.</param>
         public static void ShutdownSocket(Socket socket)
         {
-            DebugUtilities.Log("Closing socket on port " +
-            socket.LocalEndPoint);
+            if (socket.Connected)
+            {
+                DebugUtilities.Log("Closing socket on port " +
+                socket.LocalEndPoint);
 
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Disconnect(false);
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Disconnect(false);
+            }
         }
 
         // Callbacks for socket connection
@@ -159,6 +175,8 @@ namespace AlphaOwl.UniversalController.Utilities
                 state.buffer, 0, StateObject.bufferSize, 0,
                 new AsyncCallback(ReceiveCallback), state
             );
+
+            listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
         }
 
         /// <summary>
@@ -194,21 +212,21 @@ namespace AlphaOwl.UniversalController.Utilities
                     if (content.IndexOf(EndTag) > -1)
                     {
                         // All the data has been read from the client. 
-                        string trimmedContent = 
-                            content.Substring(0,content.LastIndexOf(EndTag));
+                        string trimmedContent =
+                            content.Substring(0, content.LastIndexOf(EndTag));
 
                         // Pass the content to the listener.
                         messageReceiver.OnReceiveComplete(
                             handler, trimmedContent);
+
+                        // Clean state data string
+                        state.sb = new StringBuilder();
                     }
-                    else
-                    {
-                        // Not all data received. Get more.
-                        handler.BeginReceive(
-                            state.buffer, 0, StateObject.bufferSize, 0,
-                            new AsyncCallback(ReceiveCallback), state
-                        );
-                    }
+                    //  Continue to receive data
+                    handler.BeginReceive(
+                        state.buffer, 0, StateObject.bufferSize, 0,
+                        new AsyncCallback(ReceiveCallback), state
+                    );
                 }
             }
             catch (Exception ex)
