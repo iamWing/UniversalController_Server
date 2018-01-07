@@ -271,7 +271,7 @@ namespace AlphaOwl.UniversalController
 
         private void KeyDownCommand(int playerId, string[] cmd)
         {
-            bool hasExtra = (cmd.Length == UCCommand.KeyDownExtraLength - 1);
+            bool hasExtra = (cmd.Length == UCCommand.KeyDownExtraLength - 2);
 
             if (hasExtra)
                 cmdHandler.KeyDown(playerId, cmd[0], cmd[1]);
