@@ -316,7 +316,7 @@ namespace AlphaOwl.UniversalController
                 case UCCommand.Register:
                     if (cmd.Length == UCCommand.RegisterLength)
                     {
-                        RegisterClient(handler, msg);
+                        RegisterClient(handler, cmd[1]);
                     }
                     else
                     {
