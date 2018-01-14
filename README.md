@@ -75,6 +75,10 @@ ___Type of parameters___
 ---
 ## Version history
 
+__v2.0.1__
+
+- Closes the socket when disconnected.
+
 __v2.0.0__
 
 - Reimplemented socket server with better structure and resources management.
