@@ -152,6 +152,7 @@ namespace AlphaOwl.UniversalController.Utilities
 
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Disconnect(false);
+                socket.Close();
             }
         }
 
