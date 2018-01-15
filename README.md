@@ -1,12 +1,17 @@
 # Universal Controller Server
 
 Universal Controller is a SDK that allows developers to use their customised 
-controller on mobile devices with Unity. This package doesn't limited the 
-mobile side application to be an Unity app. It's aimed to support native 
-Android & iOS apps for the controller side.
+controller on mobile devices or tailor made hardware controllers with Unity. 
+This package doesn't limited the mobile side application to be an Unity app. 
+It's aimed to support native Android, iOS apps, and single board computers like 
+Arduino boards & Raspberry Pi for the controller side.
 
 This repo is the server side Unity package which hosts a socket server within 
 the Unity app by using native .NET socket APIs.
+
+For the client side library, please refer to 
+[here](https://github.com/iamWing/uc-client-java) for Java based client and 
+[here](https://github.com/iamWing/uc-client-android) for Android client library.
 
 ---
 ## Getting start
@@ -30,6 +35,13 @@ properly that you can use it as an example.
 The server will shutdown by itself on application quit. Alternatively you can 
 call UCNetworkManager.ServerShutDown() to shutdown the server anytime you 
 want, the server will then shutdown after all data is sent and received.
+
+To test the server, you can use 
+[this](https://gist.github.com/iamWing/45ce5432acacf75fbb3b98c0b4c8e0fe) Java 
+cmd tool. It is a fairly simple cmd line program to test out your server. Just 
+type in your server IP and type in the commands. One thing to mention is this 
+tool will throw the IOException and terminate itself if there is any error on 
+the connection between the tool and the socket server.
 
 ---
 ## Commands
@@ -93,3 +105,12 @@ __v1.0.0-alpha *pre-release*__
 
  - Set up socket server in Unity.
  - Includes test script for starting the server.
+
+## License & copyright
+
+Copyright (c) 2018 Wing Chau & AlphaOwl.co.uk
+<br />
+All rights reserved.
+
+This software may be modified and distributed under the terms
+of the MIT license. See the LICENSE file for details.
